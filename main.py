@@ -45,7 +45,7 @@ async def check_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"🔍 Анализ: @{username}\n\n"
         f"⭐ Потенциал: {score}/100\n\n"
-        "⚠️ Проверка занятости будет подключена следующим этапом."
+        "⏳ Проверка занятости готовится..."
     )
 
 
