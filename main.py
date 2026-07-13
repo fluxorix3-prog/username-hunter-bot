@@ -71,13 +71,7 @@ async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     await update.message.reply_text(text)
-    names = [
-        ("aivora", 94),
-        ("nexora", 92),
-        ("payzen", 90),
-        ("lunex", 88),
-        ("veliq", 87),
-    ]
+    
 
     text = "🔥 Потенциальные юзернеймы:\n\n"
 
