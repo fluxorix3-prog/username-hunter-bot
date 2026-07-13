@@ -22,6 +22,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"@{name} — ⭐ {score}/100\n"
 
     await update.message.reply_text(text)
+    
+    
+
+    text = "🔥 Потенциальные юзернеймы:\n\n"
+
+    for name, score in names:
+        text += f"@{name} — ⭐ {score}/100\n"
+
+    await update.message.reply_text(text)
     await update.message.reply_text(
         "👋 Username Hunter запущен!\n\n"
         "Отправь мне юзернейм без @, например:\n"
