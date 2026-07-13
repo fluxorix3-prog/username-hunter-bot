@@ -24,25 +24,83 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def rate_username(username):
-    score = 50
 
+    username = username.lower()
+
+    score = 0
+    reasons = []
+
+
+    # Длина
     length = len(username)
 
     if length <= 5:
-        score += 25
+        score += 30
+        reasons.append("короткий юз")
     elif length <= 7:
-        score += 15
-
-    if username.isalpha():
+        score += 20
+        reasons.append("хорошая длина")
+    elif length <= 10:
         score += 10
 
-    good_letters = ["x", "a", "o", "i", "n", "v"]
 
-    for letter in good_letters:
-        if letter in username.lower():
-            score += 3
+    # Произносимость
+    vowels = "aeiou"
 
-    return min(score, 100)
+    vowel_count = sum(
+        1 for x in username if x in vowels
+    )
+
+    if vowel_count >= 2:
+        score += 15
+        reasons.append("легко произносится")
+
+
+    # Брендовые слова
+    premium_words = [
+        "ai",
+        "bot",
+        "neo",
+        "nova",
+        "nex",
+        "pay",
+        "coin",
+        "crypto",
+        "meta",
+        "labs",
+        "hub",
+        "cloud",
+        "agent"
+    ]
+
+
+    for word in premium_words:
+        if word in username:
+            score += 20
+            reasons.append(f"тема: {word}")
+            break
+
+
+    # Красивые буквы
+    if any(x in username for x in ["x", "v", "z"]):
+        score += 5
+
+
+    # Штрафы
+
+    if any(char.isdigit() for char in username):
+        score -= 15
+        reasons.append("есть цифры")
+
+
+    if len(set(username)) < len(username) - 2:
+        score -= 10
+
+
+    score = max(0, min(score, 100))
+
+
+    return score
 
 
 async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
