@@ -7,6 +7,21 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    names = [
+        ("aivora", 94),
+        ("nexora", 92),
+        ("payzen", 90),
+        ("lunex", 88),
+        ("veliq", 87),
+    ]
+
+    text = "🔥 Потенциальные юзернеймы:\n\n"
+
+    for name, score in names:
+        text += f"@{name} — ⭐ {score}/100\n"
+
+    await update.message.reply_text(text)
     await update.message.reply_text(
         "👋 Username Hunter запущен!\n\n"
         "Отправь мне юзернейм без @, например:\n"
@@ -53,6 +68,7 @@ def main():
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("find", find_names))
     app.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, check_username)
     )
