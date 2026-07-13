@@ -7,7 +7,33 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "👋 Username Hunter запущен!\n\n"
+        "Команды:\n"
+        "/find — найти варианты юзов\n\n"
+        "Или отправь любое имя для оценки."
+    )
+
+
+def rate_username(username):
+    score = 50
+
+    if len(username) <= 5:
+        score += 25
+    elif len(username) <= 7:
+        score += 15
+
+    if username.isalpha():
+        score += 10
+
+    for letter in ["x", "a", "o", "i", "n", "v"]:
+        if letter in username.lower():
+            score += 3
+
+    return min(score, 100)
+
+
+async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
     names = [
         ("aivora", 94),
         ("nexora", 92),
@@ -22,43 +48,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"@{name} — ⭐ {score}/100\n"
 
     await update.message.reply_text(text)
-    
-    
-
-    text = "🔥 Потенциальные юзернеймы:\n\n"
-
-    for name, score in names:
-        text += f"@{name} — ⭐ {score}/100\n"
-
-    await update.message.reply_text(text)
-    await update.message.reply_text(
-        "👋 Username Hunter запущен!\n\n"
-        "Отправь мне юзернейм без @, например:\n"
-        "lunex\n\n"
-        "Я проверю его и оценю."
-    )
-
-
-def rate_username(username):
-    score = 50
-
-    length = len(username)
-
-    if length <= 5:
-        score += 25
-    elif length <= 7:
-        score += 15
-
-    good_letters = ["x", "a", "o", "i", "n", "v"]
-
-    for letter in good_letters:
-        if letter in username.lower():
-            score += 3
-
-    if username.isalpha():
-        score += 10
-
-    return min(score, 100)
 
 
 async def check_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -69,7 +58,7 @@ async def check_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"🔍 Анализ: @{username}\n\n"
         f"⭐ Потенциал: {score}/100\n\n"
-        "⏳ Проверка занятости готовится..."
+        "⏳ Проверка занятости будет добавлена."
     )
 
 
@@ -78,6 +67,7 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("find", find_names))
+
     app.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, check_username)
     )
