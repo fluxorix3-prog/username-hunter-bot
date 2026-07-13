@@ -1,4 +1,5 @@
 import os
+import random
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -33,7 +34,43 @@ def rate_username(username):
     return min(score, 100)
 
 
+import random
+
+
 async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    prefixes = [
+        "neo", "ai", "nova", "zen", "nex",
+        "cyber", "meta", "byte", "quant",
+        "pay", "coin", "lux", "vibe"
+    ]
+
+    endings = [
+        "ix", "io", "ora", "ly",
+        "on", "ex", "a", "um",
+        "ify", "labs"
+    ]
+
+    names = []
+
+    for i in range(10):
+        name = random.choice(prefixes) + random.choice(endings)
+
+        score = rate_username(name)
+
+        names.append((name, score))
+
+
+    names.sort(key=lambda x: x[1], reverse=True)
+
+
+    text = "🔥 Новые потенциальные юзы:\n\n"
+
+    for name, score in names:
+        text += f"@{name} ⭐ {score}/100\n"
+
+
+    await update.message.reply_text(text)
     names = [
         ("aivora", 94),
         ("nexora", 92),
