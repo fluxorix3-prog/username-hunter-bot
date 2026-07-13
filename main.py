@@ -14,16 +14,6 @@ from telegram.ext import (
 TOKEN = os.getenv("BOT_TOKEN")
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 Username Hunter запущен!\n\n"
-        "Команды:\n"
-        "/find — найти новые юзы\n\n"
-        "Отправь любое имя — я оценю его."
-    )
-
-
-def rate_username(username):
 def rate_username(username):
 
     username = username.lower()
@@ -31,7 +21,7 @@ def rate_username(username):
     score = 50
 
 
-    # длина
+    # Длина
     length = len(username)
 
     if 5 <= length <= 6:
@@ -44,7 +34,7 @@ def rate_username(username):
         score -= 15
 
 
-    # читаемость
+    # Гласные = легче произнести
     vowels = "aeiou"
 
     vowel_count = sum(
@@ -55,7 +45,7 @@ def rate_username(username):
         score += 15
 
 
-    # коммерческие темы
+    # Ценные темы
     premium_words = [
         "ai",
         "bot",
@@ -68,7 +58,8 @@ def rate_username(username):
         "meta",
         "labs",
         "hub",
-        "cloud"
+        "cloud",
+        "agent"
     ]
 
 
@@ -78,21 +69,38 @@ def rate_username(username):
             break
 
 
-    # красивые буквы
+    # Красивые буквы
     if any(x in username for x in ["x", "v", "z"]):
         score += 5
 
 
-    # штрафы
+    # Штрафы
 
-    if len(set(username)) < len(username) - 2:
-        score -= 10
+    if any(char.isdigit() for char in username):
+        score -= 20
+
+
+    if " " in username:
+        score -= 50
 
 
     return max(0, min(score, 100))
 
 
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    await update.message.reply_text(
+        "👋 Username Hunter запущен!\n\n"
+        "Команды:\n"
+        "/find — найти новые юзы\n\n"
+        "Отправь любой юз для оценки."
+    )
+
+
+
 async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
 
     prefixes = [
         "neo",
@@ -112,6 +120,7 @@ async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "orb"
     ]
 
+
     endings = [
         "ix",
         "io",
@@ -130,20 +139,37 @@ async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     while len(results) < 20:
-        name = random.choice(prefixes) + random.choice(endings)
 
-if not name.isalpha():
-    continue
+        name = (
+            random.choice(prefixes)
+            +
+            random.choice(endings)
+        )
 
-if len(name) < 5:
-    continue
+
+        if not name.isalpha():
+            continue
+
+
+        if len(name) < 5:
+            continue
+
+
+        results.add(name)
+
 
 
     ranked = []
 
+
     for name in results:
+
         score = rate_username(name)
-        ranked.append((name, score))
+
+        ranked.append(
+            (name, score)
+        )
+
 
 
     ranked.sort(
@@ -152,18 +178,24 @@ if len(name) < 5:
     )
 
 
-    text = "🔥 Новые потенциальные юзы:\n\n"
+    text = "🔥 ТОП потенциальных юзов:\n\n"
 
 
-    for name, score in ranked:
-        text += f"@{name} ⭐ {score}/100\n"
+    for name, score in ranked[:10]:
+
+        text += (
+            f"@{name} ⭐ {score}/100\n"
+        )
+
 
 
     await update.message.reply_text(text)
 
 
 
+
 async def check_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
 
     username = (
         update.message.text
@@ -171,13 +203,17 @@ async def check_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
         .replace("@", "")
     )
 
+
     score = rate_username(username)
 
 
     await update.message.reply_text(
-        f"🔍 Анализ: @{username}\n\n"
+
+        f"🔍 Анализ @{username}\n\n"
         f"⭐ Потенциал: {score}/100"
+
     )
+
 
 
 
@@ -187,11 +223,18 @@ def main():
 
 
     app.add_handler(
-        CommandHandler("start", start)
+        CommandHandler(
+            "start",
+            start
+        )
     )
 
+
     app.add_handler(
-        CommandHandler("find", find_names)
+        CommandHandler(
+            "find",
+            find_names
+        )
     )
 
 
