@@ -24,27 +24,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def rate_username(username):
+def rate_username(username):
 
     username = username.lower()
 
-    score = 0
-    reasons = []
+    score = 50
 
 
-    # Длина
+    # длина
     length = len(username)
 
-    if length <= 5:
-        score += 30
-        reasons.append("короткий юз")
-    elif length <= 7:
-        score += 20
-        reasons.append("хорошая длина")
-    elif length <= 10:
-        score += 10
+    if 5 <= length <= 6:
+        score += 25
+
+    elif 7 <= length <= 9:
+        score += 15
+
+    elif length > 12:
+        score -= 15
 
 
-    # Произносимость
+    # читаемость
     vowels = "aeiou"
 
     vowel_count = sum(
@@ -53,10 +53,9 @@ def rate_username(username):
 
     if vowel_count >= 2:
         score += 15
-        reasons.append("легко произносится")
 
 
-    # Брендовые слова
+    # коммерческие темы
     premium_words = [
         "ai",
         "bot",
@@ -69,38 +68,28 @@ def rate_username(username):
         "meta",
         "labs",
         "hub",
-        "cloud",
-        "agent"
+        "cloud"
     ]
 
 
     for word in premium_words:
         if word in username:
-            score += 20
-            reasons.append(f"тема: {word}")
+            score += 15
             break
 
 
-    # Красивые буквы
+    # красивые буквы
     if any(x in username for x in ["x", "v", "z"]):
         score += 5
 
 
-    # Штрафы
-
-    if any(char.isdigit() for char in username):
-        score -= 15
-        reasons.append("есть цифры")
-
+    # штрафы
 
     if len(set(username)) < len(username) - 2:
         score -= 10
 
 
-    score = max(0, min(score, 100))
-
-
-    return score
+    return max(0, min(score, 100))
 
 
 async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -140,9 +129,14 @@ async def find_names(update: Update, context: ContextTypes.DEFAULT_TYPE):
     results = set()
 
 
-    while len(results) < 10:
+    while len(results) < 20:
         name = random.choice(prefixes) + random.choice(endings)
-        results.add(name)
+
+if not name.isalpha():
+    continue
+
+if len(name) < 5:
+    continue
 
 
     ranked = []
